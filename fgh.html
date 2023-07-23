@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hyperspace Effect</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: #000;
+      text-align: center;
+      margin: 0;
+    }
+
+    body:before {
+      content: '';
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+    }
+
+    .scene {
+      display: inline-block;
+      vertical-align: middle;
+      perspective: 5px;
+      perspective-origin: 50% 50%;
+      position: relative;
+    }
+
+    .wrap {
+      position: absolute;
+      width: 1000px;
+      height: 1000px;
+      left: -500px;
+      top: -500px;
+      transform-style: preserve-3d;
+      animation: move 12s infinite linear;
+      animation-fill-mode: forwards;
+    }
+
+    .wrap:nth-child(2) {
+      animation: move 12s infinite linear;
+      animation-delay: 6s;
+    }
+
+    .wall {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      opacity: 0;
+      animation: fade 12s infinite linear;
+      animation-delay: 0;
+      background: url(https://i.ibb.co/MDm3C25/PIA09959-1280x800-copy.jpg);
+      background-size: cover;
+    }
+
+    .wrap:nth-child(2) .wall {
+      animation-delay: 6s;
+    }
+
+    .wall-right {
+      transform: rotateY(90deg) translateZ(500px);
+    }
+
+    .wall-left {
+      transform: rotateY(-90deg) translateZ(500px);
+    }
+
+    .wall-top {
+      transform: rotateX(90deg) translateZ(500px);
+    }
+
+    .wall-bottom {
+      transform: rotateX(-90deg) translateZ(500px);
+    }
+
+    .wall-back {
+      transform: rotateX(180deg) translateZ(500px);
+    }
+
+    @keyframes move {
+      0% {
+        transform: translateZ(-500px) rotate(0deg);
+      }
+      100% {
+        transform: translateZ(500px) rotate(0deg);
+      }
+    }
+
+    @keyframes fade {
+      0% {
+        opacity: 0;
+      }
+      25% {
+        opacity: 1;
+      }
+      75% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    /* Hovering button */
+    .button-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .button {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, orange, transparent);
+      box-shadow: 0 0 10px yellow, 0 0 20px yellow, 0 0 30px yellow;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .button:hover {
+      opacity: 1;
+    }
+
+    /* Purple box */
+    .purple-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0) translateY(0); /* Start with 0 scale and no vertical movement */
+      width: 75%;
+      height: 75%;
+      background: rgba(128, 0, 128, 0.5); /* Purple color with 50% opacity (adjust the alpha value as needed) */
+      border-radius: 20px;
+      box-shadow: 0 0 20px purple, 0 0 40px purple, 0 0 60px purple;
+      display: none;
+      animation: rocket 1.5s ease-in-out forwards;
+    }
+
+    @keyframes rocket {
+      0% {
+        transform: translate(-50%, -50%) scale(0) translateY(0); /* Start with 0 scale and no vertical movement */
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1) translateY(-100px); /* Move up 100px while scaling */
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1) translateY(0); /* Back to original position */
+      }
+    }
+
+    /* Animation to fade-in and scale-up the purple box */
+    @keyframes fadeInAndScaleUp {
+      0% {
+        transform: translate(-50%, -50%) scale(0); /* Start with 0 scale */
+        opacity: 0; /* Start with 0 opacity */
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1); /* Full scale */
+        opacity: 1; /* Fully visible */
+      }
+    }
+
+    /* Animation to fade-out and scale-down the purple box */
+    @keyframes fadeOutAndScaleDown {
+      0% {
+        transform: translate(-50%, -50%) scale(1); /* Full scale */
+        opacity: 1; /* Fully visible */
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(0); /* Start with 0 scale */
+        opacity: 0; /* Start with 0 opacity */
+      }
+    }
+
+    /* Apply the fadeInAndScaleUp animation to the purple box when the 'show' class is added */
+    .purple-box.show {
+      animation: fadeInAndScaleUp 1.5s ease-in-out forwards;
+    }
+
+    /* Apply the fadeOutAndScaleDown animation to the purple box when the 'hide' class is added */
+    .purple-box.hide {
+      animation: fadeOutAndScaleDown 1.5s ease-in-out forwards;
+    }
+
+    /* Profile image */
+    .profile-image-container {
+      position: absolute;
+      top: 50%;
+      right: calc(25% - 275px); /* Adjust the position here */
+      transform: translateY(-50%) scale(0);
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      border: 5px solid yellow;
+      background: url(https://i.ibb.co/9TvK4Mq/ertyui.jpg) no-repeat center center / cover;
+      z-index: 1;
+      box-shadow: 0 0 0 yellow;
+      animation: pulse 2s linear infinite, loading 2s linear 2s forwards;
+      opacity: 0;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 yellow;
+      }
+      50% {
+        box-shadow: 0 0 20px yellow;
+      }
+      100% {
+        box-shadow: 0 0 0 yellow;
+      }
+    }
+
+    @keyframes loading {
+      0% {
+        transform: translateY(-50%) scale(0);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(-50%) scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Typewriter text */
+    .typewriter-container {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      transform: translateY(-50%);
+      font-family:'Courier New', monospace;
+      font-size: 70px;
+      color: #00FFFF;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 5px solid blue; /* Add a blinking caret effect */
+      animation: typing 6s steps(40) 0s forwards, blink-caret 0.75s infinite;
+      opacity: 0;
+    }
+
+    @keyframes typing {
+      0% {
+        width: 0;
+        opacity: 0;
+      }
+      25% {
+        width: 10;
+        opacity: 0;
+      }
+      50% {
+        width: 650px; /* Adjust the width based on the text length */
+        opacity: 1;
+      }
+      100% {
+        width: 525px; /* Adjust the width based on the text length */
+        opacity: 1;
+      }
+    }
+
+    @keyframes blink-caret {
+      from,
+      to {
+        border-right-color: transparent;
+      }
+      50% {
+        border-right-color: #00FFFF;
+      }
+    }
+  .social-links {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      gap: 20px;
+    }
+
+    .social-link {
+      color: #fff;
+      font-size: 24px;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .social-link:hover {
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <div class="wrap">
+      <div class="wall wall-right"></div>
+      <div class="wall wall-left"></div>
+      <div class="wall wall-top"></div>
+      <div class="wall wall-bottom"></div>
+      <div class="wall wall-back"></div>
+    </div>
+    <div class="wrap">
+      <div class="wall wall-right"></div>
+      <div class="wall wall-left"></div>
+      <div class="wall wall-top"></div>
+      <div class="wall wall-bottom"></div>
+      <div class="wall wall-back"></div>
+    </div>
+  </div>
+
+  <!-- Hovering button -->
+  <div class="button-container">
+    <div class="button" onclick="togglePurpleBox()"></div>
+  </div>
+
+  <!-- Purple box -->
+  <div class="purple-box" id="purpleBox">
+    <!-- Typewriter text -->
+    <div class="typewriter-container">
+      <div>Hi!</div>
+      <div>I am Avilash</div>
+    </div>
+    <!-- Profile image -->
+    <div class="profile-image-container"></div>
+    <!-- Social media links -->
+    <div class="social-links">
+      <a class="social-link" href="https://www.instagram.com/avilash.ravi/" target="_blank">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a class="social-link" href="https://www.linkedin.com/in/avilash-ravi-0326b2232/" target="_blank">
+        <i class="fab fa-linkedin"></i>
+      </a>
+      <a class="social-link" href="https://github.com/avilash03" target="_blank">
+        <i class="fab fa-github"></i>
+      <a class="social-link" href="https://twitter.com/Avilash_Ravi" target="_blank">
+        <i class="fab fa-twitter"></i>
+      <a class="social-link" href="https://www.facebook.com/avilash.ravi/" target="_blank">
+        <i class="fab fa-facebook"></i>
+      </a>
+    </div>
+  </div>
+<audio src="https://soundcloud.com/avi-rav/x2downloadapp-hyperspace-white-noise-spaceship-sounds-for-sleep-studying-or-focus-10-hours-64-kbps?si=e15df6d4854940e49cf0fd94ce27a2ba&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing" autoplay loop style="display:none;"></audio>
+
+
+  <!-- Add your script here -->
+  <script>
+   const audioSourceURL = "https://soundcloud.com/avi-rav/x2downloadapp-hyperspace-white-noise-spaceship-sounds-for-sleep-studying-or-focus-10-hours-64-kbps?si=e15df6d4854940e49cf0fd94ce27a2ba&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing";
+
+    // Create a new Audio object and set the source
+    const audio = new Audio(audioSourceURL);
+
+    // Play the audio when the page is loaded
+    audio.autoplay = true;
+    audio.loop = true;
+
+    function togglePurpleBox() {
+      var purpleBox = document.getElementById("purpleBox");
+      var hoverButton = document.getElementById("hoverButton"); // Get the button element by ID
+
+      if (purpleBox.classList.contains("show")) {
+        purpleBox.classList.remove("show");
+        purpleBox.classList.add("hide");
+        setTimeout(function() {
+          purpleBox.style.display = "none";
+        }, 1500); // Wait for the fade-out animation to complete before hiding the box
+      } else {
+        purpleBox.style.display = "block";
+        purpleBox.classList.remove("hide");
+        purpleBox.classList.add("show");
+      }
+
+      // Hide the button after it's clicked
+      hoverButton.style.display = "none";
+    }
+
+    // Show profile image after the loading animation
+    setTimeout(function() {
+      document.querySelector(".profile-image-container").style.opacity = 1;
+    }, 2000); // Set the delay time to match the loading animation duration
+  </script>
+</body>
+</html>
